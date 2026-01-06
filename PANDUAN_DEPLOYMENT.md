@@ -450,8 +450,6 @@ Jika masih ada masalah:
 
 ---
 
-## 🎉 Selamat!
-
 Aplikasi GrandStation sudah siap digunakan!
 
 **Happy Coding! 🚀**
