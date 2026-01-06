@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/UAS_GrandStation">
+    <!-- Database Connection Pool -->
+    <Resource name="jdbc/GrandStationDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="20"
+              maxIdle="5"
+              maxWaitMillis="10000"
+              username="postgres"
+              password="YOUR_PASSWORD_HERE"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/grandstation"/>
+</Context>
