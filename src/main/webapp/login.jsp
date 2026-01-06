@@ -122,19 +122,6 @@
                     </p>
                 </div>
 
-                <!-- Footer Info -->
-                <div class="px-8 py-4 bg-slate-50 border-t border-slate-100">
-                    <p class="text-xs text-slate-500 text-center">
-                        Akun demo: demo@email.com / password123
-                    </p>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="mt-8 text-center">
-                <p class="text-slate-600 text-sm">
-                    GrandStation © 2025 | Platform pemesanan kereta terpercaya
-                </p>
             </div>
         </div>
     </div>
