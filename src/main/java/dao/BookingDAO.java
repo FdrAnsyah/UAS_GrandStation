@@ -490,4 +490,63 @@ public class BookingDAO {
         }
         return list;
     }
+
+    // Get booking by ID
+    public Booking getById(int id) {
+        String sql = "SELECT "
+                + "b.id AS booking_id, b.booking_code, b.passenger_name, b.passenger_phone, b.seats, b.total_price, b.created_at, b.status, "
+                + "s.id AS schedule_id, s.depart_time, s.arrive_time, s.price, s.seats_available, "
+                + "t.id AS train_id, t.code AS train_code, t.name AS train_name, t.train_class, t.seats_total, "
+                + "o.id AS origin_id, o.code AS origin_code, o.name AS origin_name, o.city AS origin_city, "
+                + "d.id AS dest_id, d.code AS dest_code, d.name AS dest_name, d.city AS dest_city "
+                + "FROM bookings b "
+                + "JOIN schedules s ON b.schedule_id = s.id "
+                + "JOIN trains t ON s.train_id = t.id "
+                + "JOIN stations o ON s.origin_id = o.id "
+                + "JOIN stations d ON s.destination_id = d.id "
+                + "WHERE b.id = ?";
+
+        try (Connection c = KoneksiDB.getConnection()) {
+            if (c == null) return null;
+            try (PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                try (ResultSet r = ps.executeQuery()) {
+                    if (r.next()) {
+                        return mapRow(r);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Update booking
+    public boolean update(Booking booking) {
+        String sql = "UPDATE bookings SET booking_code=?, passenger_name=?, passenger_phone=?, seats=?, total_price=?, status=?, created_at=? WHERE id=?";
+        try (Connection c = KoneksiDB.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, booking.getBookingCode());
+            ps.setString(2, booking.getPassengerName());
+            ps.setString(3, booking.getPassengerPhone());
+            ps.setInt(4, booking.getSeats());
+            ps.setDouble(5, booking.getTotalPrice());
+            ps.setString(6, booking.getStatus());
+
+            Timestamp timestamp = null;
+            if (booking.getCreatedAt() != null) {
+                timestamp = Timestamp.valueOf(booking.getCreatedAt());
+            }
+            ps.setTimestamp(7, timestamp);
+
+            ps.setInt(8, booking.getId());
+
+            int rows = ps.executeUpdate();
+            return rows > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

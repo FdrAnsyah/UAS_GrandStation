@@ -119,4 +119,33 @@ public class PaymentDAO {
         }
         return list;
     }
+
+    public Payment getByBookingId(int bookingId) {
+        String sql = "SELECT id, booking_id, payment_code, amount, status, method, created_at, updated_at FROM payments WHERE booking_id = ? ORDER BY created_at DESC LIMIT 1";
+        try (Connection c = KoneksiDB.getConnection()) {
+            if (c == null) return null;
+            try (PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setInt(1, bookingId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        Payment p = new Payment();
+                        p.setId(rs.getInt("id"));
+                        p.setBookingId(rs.getInt("booking_id"));
+                        p.setPaymentCode(rs.getString("payment_code"));
+                        p.setAmount(rs.getDouble("amount"));
+                        p.setStatus(rs.getString("status"));
+                        p.setMethod(rs.getString("method"));
+                        Timestamp createdAt = rs.getTimestamp("created_at");
+                        Timestamp updatedAt = rs.getTimestamp("updated_at");
+                        p.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
+                        p.setUpdatedAt(updatedAt != null ? updatedAt.toLocalDateTime() : null);
+                        return p;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

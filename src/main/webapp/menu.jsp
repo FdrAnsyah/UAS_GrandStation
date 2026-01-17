@@ -17,20 +17,26 @@
 
         <nav class="hidden md:flex items-center gap-1 text-sm font-medium">
             <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/index.jsp?halaman=home">Beranda</a>
-            <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/contact.jsp">Kontak</a>
+            <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/index.jsp?halaman=about">About</a>
+            <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/index.jsp?halaman=gallery">Gallery</a>
             <%
                 Object navUser = session.getAttribute("user");
                 String navUserRole = (String) session.getAttribute("userRole");
                 if (navUser != null) {
                     if ("admin".equals(navUserRole)) {
+                        // Admin tidak perlu menu tambahan di navbar, sudah ada di samping logout
             %>
-                <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/admin-bookings">Approve Pesanan</a>
             <%
                     } else {
             %>
+                <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/contact.jsp">Kontak</a>
                 <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/bookings">Pesanan Saya</a>
             <%
                     }
+                } else {
+            %>
+                <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/contact.jsp">Kontak</a>
+            <%
                 }
             %>
         </nav>
@@ -44,7 +50,7 @@
             <% if (user != null) { %>
                 <span class="px-3 py-2 text-slate-700 font-semibold">Halo, <%= userName %>!</span>
                 <% if ("admin".equals(userRole)) { %>
-                    <a class="px-3 py-2 rounded-lg border border-sky-600 text-sky-700 hover:bg-sky-50 font-semibold transition" href="${pageContext.request.contextPath}/index.jsp?halaman=admin">Dashboard Admin</a>
+                    <a class="px-3 py-2 rounded-lg border border-sky-600 text-sky-700 hover:bg-sky-50 font-semibold transition" href="${pageContext.request.contextPath}/admin-manage">Dashboard</a>
                 <% } %>
                 <a class="px-4 py-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-700 text-white font-semibold shadow-lg hover:shadow-blue-600/40 hover:-translate-y-0.5 transition-all text-sm" href="${pageContext.request.contextPath}/logout">Logout</a>
             <% } else { %>
@@ -57,20 +63,26 @@
     <div id="nav-panel" class="md:hidden hidden border-t border-slate-200 bg-white shadow-lg">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3 grid grid-cols-2 gap-3 text-sm font-medium">
             <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/index.jsp?halaman=home">Beranda</a>
-            <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/contact.jsp">Kontak</a>
+            <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/index.jsp?halaman=about">About</a>
+            <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700 transition" href="${pageContext.request.contextPath}/index.jsp?halaman=gallery">Gallery</a>
             <%
                 Object mobileUser = session.getAttribute("user");
                 String mobileUserRole = (String) session.getAttribute("userRole");
                 if (mobileUser != null) {
                     if ("admin".equals(mobileUserRole)) {
+                        // Admin tidak perlu menu tambahan, sudah ada Dashboard button
             %>
-                <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700" href="${pageContext.request.contextPath}/admin-bookings">Approve Pesanan</a>
             <%
                     } else {
             %>
+                <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700" href="${pageContext.request.contextPath}/contact.jsp">Kontak</a>
                 <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700" href="${pageContext.request.contextPath}/bookings">Pesanan Saya</a>
             <%
                     }
+                } else {
+            %>
+                <a class="px-3 py-2 rounded-lg hover:bg-sky-50 text-slate-700" href="${pageContext.request.contextPath}/contact.jsp">Kontak</a>
+            <%
                 }
             %>
             <%
@@ -78,7 +90,7 @@
                 String userRole3 = (String) session.getAttribute("userRole");
                 if (user3 != null && "admin".equals(userRole3)) {
             %>
-                <a class="col-span-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 font-semibold" href="${pageContext.request.contextPath}/index.jsp?halaman=admin">Dashboard Admin</a>
+                <a class="col-span-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 font-semibold" href="${pageContext.request.contextPath}/admin-manage">Dashboard</a>
             <% } %>
             <%
                 Object user2 = session.getAttribute("user");

@@ -190,4 +190,34 @@ public class ScheduleDAO {
         }
         return false;
     }
+
+    public List<Schedule> getFeaturedSchedules(int limit) {
+        List<Schedule> list = new ArrayList<>();
+        String sql = "SELECT "
+                + "s.id, s.depart_time, s.arrive_time, s.price, s.seats_available, "
+                + "t.id AS train_id, t.code AS train_code, t.name AS train_name, t.train_class, t.seats_total, "
+                + "o.id AS origin_id, o.code AS origin_code, o.name AS origin_name, o.city AS origin_city, "
+                + "d.id AS dest_id, d.code AS dest_code, d.name AS dest_name, d.city AS dest_city "
+                + "FROM schedules s "
+                + "JOIN trains t ON s.train_id = t.id "
+                + "JOIN stations o ON s.origin_id = o.id "
+                + "JOIN stations d ON s.destination_id = d.id "
+                + "WHERE s.depart_time >= CURRENT_DATE AND s.depart_time < CURRENT_DATE + INTERVAL '7 days' "
+                + "ORDER BY s.depart_time ASC LIMIT ?";
+
+        try (Connection c = KoneksiDB.getConnection()) {
+            if (c == null) return list;
+            try (PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setInt(1, limit);
+                try (ResultSet r = ps.executeQuery()) {
+                    while (r.next()) {
+                        list.add(mapRow(r));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

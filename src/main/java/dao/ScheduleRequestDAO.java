@@ -12,32 +12,42 @@ import java.util.Map;
 
 public class ScheduleRequestDAO {
 
-    // Save or update schedule request from user
-    public void saveRequest(int userId, int originId, int destinationId, LocalDate requestedDate) {
-        String checkSql = "SELECT id, request_count FROM schedule_requests WHERE user_id = ? AND origin_station_id = ? AND destination_station_id = ? AND requested_date = ? AND status = 'pending'";
+    // Save or update schedule request (supports logged-in user or anonymous)
+    public void saveRequest(Integer userId, int originId, int destinationId, LocalDate requestedDate) {
+        String checkSqlWithUser = "SELECT id FROM schedule_requests WHERE user_id = ? AND origin_station_id = ? AND destination_station_id = ? AND requested_date = ? AND status = 'pending'";
+        String checkSqlAnon = "SELECT id FROM schedule_requests WHERE user_id IS NULL AND origin_station_id = ? AND destination_station_id = ? AND requested_date = ? AND status = 'pending'";
         String updateSql = "UPDATE schedule_requests SET request_count = request_count + 1, last_requested_at = NOW() WHERE id = ?";
         String insertSql = "INSERT INTO schedule_requests (user_id, origin_station_id, destination_station_id, requested_date) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = KoneksiDB.getConnection()) {
-            // Check if request already exists
+            if (conn == null) return;
+
+            boolean isAnonymous = userId == null;
+            String checkSql = isAnonymous ? checkSqlAnon : checkSqlWithUser;
+
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
-                checkStmt.setInt(1, userId);
-                checkStmt.setInt(2, originId);
-                checkStmt.setInt(3, destinationId);
-                checkStmt.setDate(4, Date.valueOf(requestedDate));
+                int paramIndex = 1;
+                if (!isAnonymous) {
+                    checkStmt.setInt(paramIndex++, userId);
+                }
+                checkStmt.setInt(paramIndex++, originId);
+                checkStmt.setInt(paramIndex++, destinationId);
+                checkStmt.setDate(paramIndex, Date.valueOf(requestedDate));
 
                 ResultSet rs = checkStmt.executeQuery();
                 if (rs.next()) {
-                    // Update existing request count
                     int requestId = rs.getInt("id");
                     try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                         updateStmt.setInt(1, requestId);
                         updateStmt.executeUpdate();
                     }
                 } else {
-                    // Insert new request
                     try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
-                        insertStmt.setInt(1, userId);
+                        if (isAnonymous) {
+                            insertStmt.setNull(1, Types.INTEGER);
+                        } else {
+                            insertStmt.setInt(1, userId);
+                        }
                         insertStmt.setInt(2, originId);
                         insertStmt.setInt(3, destinationId);
                         insertStmt.setDate(4, Date.valueOf(requestedDate));
@@ -50,10 +60,60 @@ public class ScheduleRequestDAO {
         }
     }
 
+    // Get a single schedule request by id
+    public Map<String, Object> getById(int id) {
+        String sql = "SELECT sr.id, sr.request_count, sr.requested_date, sr.status, sr.last_requested_at, " +
+                     "sr.origin_station_id, sr.destination_station_id, " +
+                     "s1.name AS origin_name, s1.code AS origin_code, s2.name AS destination_name, s2.code AS destination_code, " +
+                     "u.name AS user_name, u.email AS user_email, sr.created_at " +
+                     "FROM schedule_requests sr " +
+                     "JOIN stations s1 ON sr.origin_station_id = s1.id " +
+                     "JOIN stations s2 ON sr.destination_station_id = s2.id " +
+                     "LEFT JOIN users u ON sr.user_id = u.id " +
+                     "WHERE sr.id = ?";
+
+        try (Connection conn = KoneksiDB.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Map<String, Object> request = new HashMap<>();
+                    request.put("id", rs.getInt("id"));
+                    request.put("request_count", rs.getInt("request_count"));
+                    Date reqDate = rs.getDate("requested_date");
+                    request.put("requested_date", reqDate != null ? reqDate.toLocalDate() : null);
+                    request.put("status", rs.getString("status"));
+                    request.put("last_requested_at", rs.getTimestamp("last_requested_at"));
+                    request.put("origin_station_id", rs.getInt("origin_station_id"));
+                    request.put("destination_station_id", rs.getInt("destination_station_id"));
+                    request.put("origin_name", rs.getString("origin_name"));
+                    request.put("origin_code", rs.getString("origin_code"));
+                    request.put("destination_name", rs.getString("destination_name"));
+                    request.put("destination_code", rs.getString("destination_code"));
+                    request.put("user_name", rs.getString("user_name"));
+                    request.put("user_email", rs.getString("user_email"));
+                    request.put("created_at", rs.getTimestamp("created_at"));
+                    return request;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // Get all pending schedule requests for admin
     public List<Map<String, Object>> getPendingRequests() {
         List<Map<String, Object>> requests = new ArrayList<>();
-        String sql = "SELECT * FROM admin_schedule_requests WHERE status = 'pending' ORDER BY request_count DESC, last_requested_at DESC";
+        String sql = "SELECT sr.id, sr.request_count, sr.requested_date, sr.status, sr.last_requested_at, " +
+                     "s1.name AS origin_name, s1.code AS origin_code, s2.name AS destination_name, s2.code AS destination_code, " +
+                     "u.name AS user_name, u.email AS user_email, sr.created_at " +
+                     "FROM schedule_requests sr " +
+                     "JOIN stations s1 ON sr.origin_station_id = s1.id " +
+                     "JOIN stations s2 ON sr.destination_station_id = s2.id " +
+                     "LEFT JOIN users u ON sr.user_id = u.id " +
+                     "WHERE sr.status = 'pending' " +
+                     "ORDER BY sr.request_count DESC, sr.last_requested_at DESC";
 
         try (Connection conn = KoneksiDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -63,7 +123,8 @@ public class ScheduleRequestDAO {
                 Map<String, Object> request = new HashMap<>();
                 request.put("id", rs.getInt("id"));
                 request.put("request_count", rs.getInt("request_count"));
-                request.put("requested_date", rs.getDate("requested_date").toLocalDate());
+                Date reqDate = rs.getDate("requested_date");
+                request.put("requested_date", reqDate != null ? reqDate.toLocalDate() : null);
                 request.put("origin_name", rs.getString("origin_name"));
                 request.put("origin_code", rs.getString("origin_code"));
                 request.put("destination_name", rs.getString("destination_name"));

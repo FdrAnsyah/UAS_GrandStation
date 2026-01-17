@@ -8,7 +8,7 @@
               maxIdle="5"
               maxWaitMillis="10000"
               username="postgres"
-              password="YOUR_PASSWORD_HERE"
+              password="Sayapunyapostgre"
               driverClassName="org.postgresql.Driver"
               url="jdbc:postgresql://localhost:5432/grandstation"/>
 </Context>

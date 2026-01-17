@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS bookings CASCADE;
 DROP TABLE IF EXISTS schedules CASCADE;
 DROP TABLE IF EXISTS trains CASCADE;
 DROP TABLE IF EXISTS stations CASCADE;
+DROP TABLE IF EXISTS gallery_items CASCADE;
+DROP TABLE IF EXISTS schedule_requests CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
 -- ============================================================
@@ -103,6 +105,37 @@ CREATE TABLE payments (
 );
 
 -- ============================================================
+-- TABLE: schedule_requests (Permintaan jadwal dari user/guest)
+-- ============================================================
+CREATE TABLE schedule_requests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    origin_station_id INTEGER NOT NULL REFERENCES stations(id) ON DELETE CASCADE,
+    destination_station_id INTEGER NOT NULL REFERENCES stations(id) ON DELETE CASCADE,
+    requested_date DATE NOT NULL,
+    status VARCHAR(20) DEFAULT 'pending',
+    request_count INTEGER NOT NULL DEFAULT 1,
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    last_requested_at TIMESTAMP DEFAULT NOW()
+);
+CREATE INDEX idx_schedule_requests_route ON schedule_requests(origin_station_id, destination_station_id, requested_date);
+CREATE INDEX idx_schedule_requests_status ON schedule_requests(status);
+
+-- ============================================================
+-- TABLE: gallery_items (Galeri Stasiun & Kereta)
+-- ============================================================
+CREATE TABLE gallery_items (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL,
+    category VARCHAR(80) NOT NULL,
+    image_url TEXT NOT NULL,
+    description TEXT,
+    featured BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================
 -- INDEXES untuk Performance
 -- ============================================================
 CREATE INDEX idx_users_email ON users(email);
@@ -150,6 +183,17 @@ INSERT INTO trains(code, name, train_class, seats_total) VALUES
 ('BIM', 'Bima', 'Eksekutif', 180),
 ('GJY', 'Gajayana', 'Eksekutif', 190),
 ('TKS', 'Taksaka', 'Eksekutif', 210);
+
+-- ============================================================
+-- DATA: Gallery (Stasiun & Kereta)
+-- ============================================================
+INSERT INTO gallery_items(title, category, image_url, description, featured) VALUES
+('Stasiun Gambir Malam Hari', 'Stasiun', 'https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=80', 'Pemandangan eksterior Gambir dengan pencahayaan malam yang elegan.', TRUE),
+('Interior Kereta Eksekutif', 'Kereta', 'https://images.unsplash.com/photo-1504707748692-419802cf939d?auto=format&fit=crop&w=1200&q=80', 'Kenyamanan kabin kelas eksekutif untuk perjalanan jarak jauh.', TRUE),
+('Peron Pagi Hari', 'Stasiun', 'https://images.unsplash.com/photo-1429042007245-890c9e2603af?auto=format&fit=crop&w=1200&q=80', 'Suasana peron yang sibuk saat jam berangkat pagi.', FALSE),
+('Rangkaian Kereta Melintas', 'Kereta', 'https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&w=1200&q=80', 'Rangkaian kereta melintas di jalur utama dengan kecepatan stabil.', FALSE),
+('Stasiun Modern', 'Stasiun', 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80', 'Zona keberangkatan dengan desain modern dan rapi.', FALSE),
+('Kabupaten Hijau', 'Kereta', 'https://images.unsplash.com/photo-1523966211575-eb4a01e7dd51?auto=format&fit=crop&w=1200&q=80', 'Pemandangan hijau yang terlihat dari jendela kereta.', FALSE);
 
 -- ============================================================
 -- DATA: Schedules (Jadwal Kereta)

@@ -4,49 +4,416 @@
 ---
 
 ## 📋 Daftar Isi
-1. [Persiapan Awal](#persiapan-awal)
-2. [Setup Database PostgreSQL](#setup-database-postgresql)
-3. [Deployment di NetBeans IDE](#deployment-di-netbeans-ide)
-4. [Deployment di Visual Studio Code](#deployment-di-visual-studio-code)
-5. [Deployment di JetBrains IntelliJ IDEA](#deployment-di-jetbrains-intellij-idea)
-6. [Testing Aplikasi](#testing-aplikasi)
-7. [Troubleshooting](#troubleshooting)
+1. [⚙️ Persiapan Awal](#persiapan-awal)
+2. [🗄️ Setup Database PostgreSQL](#setup-database-postgresql)
+3. [🏗️ Build Project dengan Maven](#build-project-dengan-maven)
+4. [📤 Deployment di NetBeans IDE](#deployment-di-netbeans-ide)
+5. [💻 Deployment di Visual Studio Code](#deployment-di-visual-studio-code)
+6. [🎯 Deployment di JetBrains IntelliJ IDEA](#deployment-di-jetbrains-intellij-idea)
+7. [✅ Testing & Verifikasi](#testing--verifikasi)
+8. [🐛 Troubleshooting](#troubleshooting)
 
 ---
 
-## 🔧 Persiapan Awal
+## ⚙️ Persiapan Awal
 
 ### Software yang Dibutuhkan
-1. **Java Development Kit (JDK) 17 atau lebih tinggi**
-   - Download: https://www.oracle.com/java/technologies/downloads/
-   - Atau gunakan OpenJDK: https://adoptium.net/
+| Software | Versi | Status |
+|----------|-------|--------|
+| Java JDK | 17+ | ✅ Required |
+| Apache Maven | 3.8+ | ✅ Required |
+| PostgreSQL | 13+ | ✅ Required |
+| Apache Tomcat | 10.1.x | ✅ Required |
+| IDE | Any* | ⚠️ Optional |
 
-2. **Apache Maven 3.8+**
-   - Download: https://maven.apache.org/download.cgi
-   - Atau install via package manager
+*IDE: NetBeans 17+, VS Code, atau IntelliJ IDEA Community/Ultimate
 
-3. **PostgreSQL 13+**
-   - Download: https://www.postgresql.org/download/
-   - Catat username dan password saat instalasi
-
-4. **Apache Tomcat 10.1.x**
-   - Download: https://tomcat.apache.org/download-10.cgi
-   - Ekstrak ke folder pilihan Anda
-
-5. **IDE (Pilih salah satu):**
-   - NetBeans 17+ (Recommended untuk Java EE)
-   - Visual Studio Code + Extensions
-   - IntelliJ IDEA Community/Ultimate
+### Download Links
+- **Java JDK 17:** https://www.oracle.com/java/technologies/downloads/ atau https://adoptium.net/
+- **Apache Maven:** https://maven.apache.org/download.cgi
+- **PostgreSQL:** https://www.postgresql.org/download/
+- **Apache Tomcat:** https://tomcat.apache.org/download-10.cgi
 
 ### Verifikasi Instalasi
+Buka Terminal/Command Prompt dan jalankan:
 ```bash
 # Cek Java
 java -version
-# Output: java version "17.x.x" atau lebih tinggi
+# Expected: java version "17.0.x" atau lebih tinggi
 
 # Cek Maven
 mvn -version
-# Output: Apache Maven 3.x.x
+# Expected: Apache Maven 3.8.x atau lebih tinggi
+
+# Cek PostgreSQL
+psql --version
+# Expected: psql (PostgreSQL) 13.x atau lebih tinggi
+```
+
+---
+
+## 🗄️ Setup Database PostgreSQL
+
+### Step 1: Buat Database
+```bash
+# Login ke PostgreSQL (ganti 'postgres' dengan username Anda jika berbeda)
+psql -U postgres
+
+# Di dalam psql prompt, buat database:
+CREATE DATABASE grandstation;
+
+# Exit psql
+\q
+```
+
+### Step 2: Import Schema & Data
+```bash
+# Navigate ke project directory
+cd /path/to/UAS_GrandStation
+
+# Import database_complete.sql
+psql -U postgres -d grandstation -f database_complete.sql
+```
+
+**Output yang diharapkan:**
+```
+BEGIN
+CREATE TABLE
+CREATE TABLE
+...
+INSERT 0 10
+INSERT 0 8
+INSERT 0 6
+INSERT 0 3
+INSERT 0 2
+COMMIT
+```
+
+### Step 3: Verifikasi Database
+```bash
+# Login ke database
+psql -U postgres -d grandstation
+
+# Lihat semua tabel
+\dt
+
+# Expected output: users, stations, trains, schedules, bookings, payments, schedule_requests, gallery_items
+
+# Exit
+\q
+```
+
+### Koneksi Database di Aplikasi
+File konfigurasi koneksi database **sudah dikonfigurasi otomatis** di `util/KoneksiDB.java`:
+- **Host:** localhost
+- **Port:** 5432
+- **Database:** grandstation
+- **Username:** postgres
+- **Password:** [sesuaikan dengan password PostgreSQL Anda]
+
+Jika password berbeda, edit file `src/main/java/util/KoneksiDB.java`:
+```java
+private static final String DB_PASSWORD = "your_password_here";
+```
+
+---
+
+## 🏗️ Build Project dengan Maven
+
+### From Command Line
+```bash
+# Navigate ke project directory
+cd /path/to/UAS_GrandStation
+
+# Clean and Build
+mvn clean package
+
+# Skip tests (lebih cepat)
+mvn clean package -DskipTests
+```
+
+**Output yang diharapkan:**
+```
+...
+[INFO] Building jar: target/UAS_GrandStation/WEB-INF/lib/...
+[INFO] 
+[INFO] --- maven-war-plugin:3.x.x:war (default-war) @ UAS_GrandStation ---
+[INFO] Packaging webapp
+[INFO] Assembling webapp [UAS_GrandStation] in [target/UAS_GrandStation]
+[INFO] Processing war project
+[INFO] Copying webapp resources [...]
+[INFO] Building war: target/UAS_GrandStation.war
+[INFO] BUILD SUCCESS
+```
+
+File `.war` akan berada di `target/UAS_GrandStation.war`
+
+---
+
+## 📤 Deployment di NetBeans IDE
+
+### Step 1: Buka Project
+1. File → Open Project
+2. Navigate ke folder UAS_GrandStation
+3. Klik Open
+
+### Step 2: Konfigurasi Server
+1. Tools → Servers
+2. Klik Add Server
+3. Pilih Apache Tomcat 10.1.x
+4. Klik Next → Browse → Pilih Tomcat installation folder
+5. Klik Finish
+
+### Step 3: Run Project
+1. Right-click pada project → Properties
+2. Run konfigurasi:
+   - Server: Apache Tomcat 10.1.x
+   - Context Path: /UAS_GrandStation
+3. Klik OK
+4. F6 atau Run → Run Project
+
+### Step 4: Akses Aplikasi
+```
+Homepage: http://localhost:8080/UAS_GrandStation/
+Admin: http://localhost:8080/UAS_GrandStation/admin-manage
+```
+
+---
+
+## 💻 Deployment di Visual Studio Code
+
+### Step 1: Install Extensions
+1. Extensions (Ctrl+Shift+X)
+2. Search dan install:
+   - "Extension Pack for Java" (Microsoft)
+   - "Tomcat for Java" (optional)
+
+### Step 2: Buka Project
+1. File → Open Folder
+2. Navigate ke UAS_GrandStation
+
+### Step 3: Configure Tomcat
+1. Create `.vscode/tasks.json`:
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Maven Build",
+      "type": "shell",
+      "command": "mvn",
+      "args": ["clean", "package", "-DskipTests"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}
+```
+
+### Step 4: Build & Deploy
+```bash
+# Terminal di VS Code
+mvn clean package -DskipTests
+
+# Copy file .war ke Tomcat
+cp target/UAS_GrandStation.war /path/to/tomcat/webapps/
+```
+
+### Step 5: Start Tomcat & Access
+```bash
+# Windows
+C:\path\to\tomcat\bin\startup.bat
+
+# Linux/Mac
+/path/to/tomcat/bin/startup.sh
+```
+
+Access: http://localhost:8080/UAS_GrandStation/
+
+---
+
+## 🎯 Deployment di JetBrains IntelliJ IDEA
+
+### Step 1: Buka Project
+1. File → Open
+2. Navigate ke UAS_GrandStation folder
+3. Klik OK
+
+### Step 2: Konfigurasi Tomcat Server
+1. Run → Edit Configurations
+2. Klik `+` → Tomcat Server → Local
+3. Klik Configure → Path ke Tomcat installation
+4. Klik OK
+
+### Step 3: Run Configuration
+1. Run → Edit Configurations
+2. Di bagian "Deployment":
+   - Klik `+` → Artifact
+   - Pilih UAS_GrandStation:war
+3. Application context: `/UAS_GrandStation`
+4. Klik Apply → OK
+
+### Step 4: Run Project
+1. Run → Run 'Tomcat 10.1.x'
+2. Browser akan membuka otomatis ke http://localhost:8080/UAS_GrandStation/
+
+---
+
+## ✅ Testing & Verifikasi
+
+### Test 1: Homepage
+```
+URL: http://localhost:8080/UAS_GrandStation/
+Expected: Halaman beranda dengan form pencarian jadwal kereta
+```
+
+### Test 2: Register User
+```
+1. Klik "Register"
+2. Isi form dengan data baru
+3. Submit
+Expected: Akun terbuat, redirect ke login
+```
+
+### Test 3: Login Admin
+```
+URL: http://localhost:8080/UAS_GrandStation/login
+Email: admin@grandstation.com
+Password: admin123
+Expected: Redirect ke dashboard admin
+```
+
+### Test 4: Create Schedule (Admin Only)
+```
+1. Login sebagai admin
+2. Sidebar → Jadwal
+3. Klik "+ Tambah Jadwal"
+4. Isi form dan submit
+Expected: Jadwal baru muncul di list
+```
+
+### Test 5: Booking Tiket (User)
+```
+1. Homepage → Cari jadwal
+2. Pilih kereta → Isi data penumpang
+3. Pilih pembayaran → Submit
+Expected: Booking berhasil dengan kode booking unik
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### ❌ Error: "Connection Refused" (Database)
+**Cause:** PostgreSQL tidak berjalan atau port salah
+```bash
+# Check PostgreSQL status
+psql -U postgres
+
+# Jika error, start PostgreSQL:
+# Windows: Start PostgreSQL service dari Services
+# Linux/Mac: brew services start postgresql
+```
+
+### ❌ Error: "Failed to Build Project"
+**Cause:** Maven dependency error atau Java version
+```bash
+# Clean Maven cache
+mvn clean
+mvn install -U
+
+# Atau force update
+mvn -U clean package
+```
+
+### ❌ Error: "404 Not Found"
+**Cause:** Context path salah atau aplikasi belum ter-deploy
+```bash
+# Pastikan context path: /UAS_GrandStation
+# Check Tomcat logs: catalina.out atau catalina.log
+# Restart Tomcat dan rebuild project
+```
+
+### ❌ Error: "ClassNotFoundException"
+**Cause:** JAR dependencies tidak lengkap
+```bash
+# Rebuild dan pastikan target/UAS_GrandStation/WEB-INF/lib/ ada JARs
+mvn clean package
+
+# Deploy ulang .war file ke Tomcat
+```
+
+### ❌ Error: "Table Does Not Exist"
+**Cause:** Database schema tidak diimport
+```bash
+# Verify database exists
+psql -U postgres -l
+
+# Re-import schema
+psql -U postgres -d grandstation -f database_complete.sql
+```
+
+### ⚠️ Slow Performance
+**Solution:**
+1. Pastikan indexes ada di database
+2. Clear browser cache
+3. Restart Tomcat
+4. Check PostgreSQL connections: `SELECT * FROM pg_stat_activity;`
+
+---
+
+## 📋 Checklist Deploy
+
+Sebelum push ke GitHub dan deploy ke production:
+
+- [ ] Database `grandstation` berhasil dibuat
+- [ ] `database_complete.sql` berhasil diimport tanpa error
+- [ ] `mvn clean package` berhasil build tanpa error
+- [ ] Tomcat terinstall dan berjalan
+- [ ] File `.war` berhasil di-deploy ke Tomcat
+- [ ] Homepage dapat diakses via browser
+- [ ] Login admin berhasil dengan credential default
+- [ ] Bisa membuat jadwal baru (admin)
+- [ ] Bisa booking tiket (user)
+- [ ] Database credentials di-update (untuk production)
+- [ ] Password admin/user di-hash (untuk production)
+
+---
+
+## 🎓 Untuk Fresh Clone dari GitHub
+
+Ketika mengclone repository dari GitHub, ikuti langkah ini:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/FdrAnsyah/UAS_GrandStation.git
+cd UAS_GrandStation
+
+# 2. Setup database (lihat section Setup Database PostgreSQL)
+psql -U postgres -d grandstation -f database_complete.sql
+
+# 3. Build project
+mvn clean package -DskipTests
+
+# 4. Deploy ke Tomcat (sesuai IDE pilihan Anda)
+# ... (ikuti step-step di section Deployment)
+
+# 5. Access aplikasi
+# http://localhost:8080/UAS_GrandStation/
+```
+
+---
+
+## 📞 Support
+
+Jika mengalami kendala:
+1. Cek Tomcat logs: `logs/catalina.out`
+2. Cek Maven build output: `mvn clean package`
+3. Cek PostgreSQL connection: `psql -U postgres`
+4. Baca Troubleshooting section di atas
+5. Contact: admin@grandstation.com
 
 # Cek PostgreSQL
 psql --version

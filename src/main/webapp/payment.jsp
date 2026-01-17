@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="model.Booking" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="java.util.Locale" %>
 
 <!DOCTYPE html>
 <html lang="id">
@@ -75,7 +77,7 @@
                                 type="submit"
                                 class="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-700 text-white font-bold rounded-lg hover:-translate-y-0.5 transition shadow-lg"
                             >
-                                Lanjutkan Pembayaran
+                                payment
                             </button>
                         </form>
                     <% } else { %>
@@ -87,17 +89,6 @@
                         </div>
                     <% } %>
                 </div>
-
-                <!-- Payment Info -->
-                <div class="bg-blue-50 rounded-xl border-l-4 border-sky-500 p-6 mt-6 md:mt-8">
-                    <h3 class="font-bold text-sky-700 mb-3">Informasi Penting:</h3>
-                    <ul class="space-y-2 text-sm text-slate-700">
-                        <li>✓ Pembayaran aman dan terenkripsi</li>
-                        <li>✓ Tidak ada biaya tersembunyi</li>
-                        <li>✓ Konfirmasi akan dikirim ke email Anda</li>
-                        <li>✓ Tiket digital akan langsung dikirimkan</li>
-                    </ul>
-                </div>
             </div>
 
             <!-- Order Summary -->
@@ -107,6 +98,10 @@
 
                     <%
                         if (booking != null) {
+                            // Format tanggal untuk tampilan yang lebih baik
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy 'Pukul' HH:mm", new Locale("id", "ID"));
+                            String tanggalBerangkat = booking.getTanggal_berangkat() != null ?
+                                booking.getTanggal_berangkat().format(formatter) : "-";
                     %>
                         <div class="space-y-4 pb-6 border-b-2 border-slate-100">
                             <div>
@@ -115,11 +110,11 @@
                             </div>
                             <div>
                                 <p class="text-sm text-slate-600">Rute</p>
-                                <p class="font-semibold text-slate-900 text-sm md:text-base"><%= booking.getStasiun_asal() %> → <%= booking.getStasiun_tujuan() %></p>
+                                <p class="font-semibold text-slate-900 text-sm md:text-base"><%= booking.getStasiun_asal() %> - <%= booking.getStasiun_tujuan() %></p>
                             </div>
                             <div>
                                 <p class="text-sm text-slate-600">Tanggal Keberangkatan</p>
-                                <p class="font-semibold text-slate-900 text-sm md:text-base"><%= booking.getTanggal_berangkat() %></p>
+                                <p class="font-semibold text-slate-900 text-sm md:text-base"><%= tanggalBerangkat %></p>
                             </div>
                             <div>
                                 <p class="text-sm text-slate-600">Jumlah Penumpang</p>
@@ -146,7 +141,6 @@
                         <!-- Status Badge -->
                         <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
                             <p class="text-sm font-semibold text-emerald-700">✓ Booking Valid</p>
-                            <p class="text-xs text-emerald-600 mt-1">Siap untuk pembayaran</p>
                         </div>
                     <% } else { %>
                         <div class="text-center py-8 text-slate-500">

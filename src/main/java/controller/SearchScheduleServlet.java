@@ -30,13 +30,15 @@ public class SearchScheduleServlet extends HttpServlet {
             // If no schedules found, save user request for admin
             if (schedules == null || schedules.isEmpty()) {
                 HttpSession session = request.getSession(false);
+                Integer userId = null;
                 if (session != null) {
                     User user = (User) session.getAttribute("user");
                     if (user != null) {
-                        ScheduleRequestDAO requestDAO = new ScheduleRequestDAO();
-                        requestDAO.saveRequest(user.getId(), originId, destinationId, travelDate);
+                        userId = user.getId();
                     }
                 }
+                ScheduleRequestDAO requestDAO = new ScheduleRequestDAO();
+                requestDAO.saveRequest(userId, originId, destinationId, travelDate);
             }
 
             request.setAttribute("halaman", "schedules");

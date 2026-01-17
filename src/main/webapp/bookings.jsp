@@ -19,7 +19,6 @@
     <div>
         <p class="text-xs uppercase tracking-wide text-sky-700 font-semibold">GrandStation</p>
         <h2 class="text-xl font-semibold">Pesanan Saya</h2>
-        <p class="text-sm text-slate-600 mt-1">Semua booking ditarik langsung dari database. Simpan kode untuk verifikasi.</p>
     </div>
     <a href="${pageContext.request.contextPath}/index.jsp?halaman=home#cari" class="text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50">Pesan Lagi</a>
 </div>
@@ -43,6 +42,7 @@
                         <th class="text-left font-medium px-5 py-3">Total</th>
                         <th class="text-left font-medium px-5 py-3">Status</th>
                         <th class="text-left font-medium px-5 py-3">Dibuat</th>
+                        <th class="text-left font-medium px-5 py-3">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-200">
@@ -88,6 +88,15 @@
                             </span>
                         </td>
                         <td class="px-5 py-4"><%= b.getCreatedAt() != null ? b.getCreatedAt().format(dt) : "-" %></td>
+                        <td class="px-5 py-4">
+                            <% if ("approved".equals(b.getStatus())) { %>
+                                <a href="${pageContext.request.contextPath}/payment?bookingId=<%= b.getId() %>" class="px-3 py-1 text-xs bg-gradient-to-r from-sky-500 to-sky-700 text-white rounded hover:shadow-md transition">
+                                    payment
+                                </a>
+                            <% } else { %>
+                                <span class="text-xs text-slate-500">-</span>
+                            <% } %>
+                        </td>
                     </tr>
                 <% } %>
                 </tbody>

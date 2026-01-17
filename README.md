@@ -1,53 +1,188 @@
 # 🚆 GrandStation - Sistem Pemesanan Tiket Kereta Api
 
-Aplikasi web berbasis Java EE untuk sistem pemesanan tiket kereta api yang modern dan responsif.
-
-## 📸 Screenshot
-![Home](docs/screenshot-home.png)
-*Homepage dengan pencarian jadwal kereta*
+Aplikasi web modern untuk pemesanan tiket kereta api dengan antarmuka responsif, dibangun dengan Java EE, JSP, dan PostgreSQL.
 
 ## ✨ Fitur Utama
 
 ### 👤 User
-- ✅ Register & Login
-- ✅ Pencarian jadwal kereta berdasarkan rute dan tanggal
-- ✅ Booking tiket online
-- ✅ Manajemen pesanan
-- ✅ Proses pembayaran (Transfer Bank, Kartu Kredit, E-Wallet)
-- ✅ Riwayat pembayaran
+- ✅ **Register & Login** - Pendaftaran akun dan autentikasi aman
+- ✅ **Pencarian Jadwal** - Cari kereta berdasarkan rute, tanggal, dan stasiun asal/tujuan
+- ✅ **Booking Online** - Pemesanan tiket dengan sistem kursi real-time
+- ✅ **Manajemen Pesanan** - Lihat, lacak, dan kelola semua pesanan
+- ✅ **Pembayaran Online** - Dukungan Transfer Bank, Kartu Kredit, E-Wallet
+- ✅ **Galeri** - Lihat foto stasiun dan kereta
+- ✅ **Hubungi Kami** - Form kontak langsung ke admin
+- ✅ **Request Jadwal** - Minta jadwal kereta yang tidak tersedia (auto-logged)
 
 ### 👨‍💼 Admin
-- ✅ Dashboard admin
-- ✅ Approve/Reject booking
-- ✅ Manajemen stasiun (CRUD)
-- ✅ Manajemen kereta (CRUD)
-- ✅ Manajemen jadwal (CRUD)
-- ✅ Lihat semua booking & pembayaran
+- ✅ **Dashboard Admin** - Ringkasan statistik booking, kereta, stasiun
+- ✅ **Approve/Reject Booking** - Kelola pesanan dengan status real-time
+- ✅ **Manajemen Stasiun** - CRUD stasiun kereta (Create, Read, Update, Delete)
+- ✅ **Manajemen Kereta** - CRUD kereta dengan info kelas dan kapasitas
+- ✅ **Manajemen Jadwal** - CRUD jadwal dengan waktu dan harga dinamis
+- ✅ **Kelola Galeri** - CRUD foto galeri stasiun dan kereta
+- ✅ **Kelola Pesanan** - Lihat semua booking dan filter status
+- ✅ **Request User** - Kelola permintaan jadwal dari user/guest dan buat jadwal baru
 
-## 🛠️ Teknologi
+## 🛠️ Teknologi & Requirements
 
-- **Backend:** Java 17, Jakarta EE 10
-- **Frontend:** JSP, Tailwind CSS
-- **Database:** PostgreSQL 13+
-- **Build Tool:** Maven 3.8+
-- **Server:** Apache Tomcat 10.1.x
-- **IDE Support:** NetBeans, VS Code, IntelliJ IDEA
+| Komponen | Versi | Status |
+|----------|-------|--------|
+| **Java JDK** | 17+ | ✅ Required |
+| **Jakarta EE** | 10 | ✅ Required |
+| **Apache Maven** | 3.8+ | ✅ Required |
+| **PostgreSQL** | 13+ | ✅ Required |
+| **Apache Tomcat** | 10.1.x | ✅ Required |
+| **Tailwind CSS** | 3.x | ✅ Included (CDN) |
+| **Space Grotesk Font** | Latest | ✅ Included (CDN) |
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 1️⃣ Prerequisites Check
 ```bash
-# Java 17+
+# Verify Java 17+
 java -version
 
-# Maven 3.8+
+# Verify Maven 3.8+
 mvn -version
 
-# PostgreSQL 13+
+# Verify PostgreSQL 13+
 psql --version
 ```
 
-### Installation
+### 2️⃣ Clone Repository
+```bash
+git clone https://github.com/FdrAnsyah/UAS_GrandStation.git
+cd UAS_GrandStation
+```
+
+### 3️⃣ Database Setup
+```bash
+# Login to PostgreSQL
+psql -U postgres
+
+# Create database
+CREATE DATABASE grandstation;
+
+# Exit psql
+\q
+
+# Import schema & data
+psql -U postgres -d grandstation -f database_complete.sql
+```
+
+### 4️⃣ Build Project
+```bash
+# Clean and package
+mvn clean package
+
+# Or with skip tests
+mvn clean package -DskipTests
+```
+
+### 5️⃣ Deploy to Tomcat
+See [PANDUAN_DEPLOYMENT.md](PANDUAN_DEPLOYMENT.md) for detailed IDE-specific instructions.
+
+### 6️⃣ Access Application
+```
+🏠 Homepage: http://localhost:8080/UAS_GrandStation/
+📊 Admin: http://localhost:8080/UAS_GrandStation/admin-manage
+👤 Login: http://localhost:8080/UAS_GrandStation/login
+```
+
+## 📝 Default Credentials
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | `admin@grandstation.com` | `admin123` |
+| User | `user@grandstation.com` | `user123` |
+
+> ⚠️ **Warning:** Ganti password di production! Hash password menggunakan bcrypt atau algoritma aman lainnya.
+
+## 📁 Project Structure
+
+```
+UAS_GrandStation/
+├── src/main/java/
+│   ├── controller/          # Servlet controllers
+│   ├── dao/                 # Data Access Objects
+│   ├── model/               # Entity models
+│   └── util/                # Utility classes
+├── src/main/webapp/
+│   ├── admin-content/       # Admin pages
+│   ├── admin-*.jsp          # Admin layouts
+│   ├── *.jsp                # User pages
+│   └── WEB-INF/
+│       └── web.xml          # Deployment descriptor
+├── pom.xml                  # Maven configuration
+├── database_complete.sql    # Database schema & data
+├── PANDUAN_DEPLOYMENT.md    # Deployment guide
+└── README.md                # This file
+```
+
+## 🗄️ Database Schema
+
+### Core Tables
+- **users** - User & admin accounts
+- **stations** - Stasiun kereta
+- **trains** - Data kereta api
+- **schedules** - Jadwal keberangkatan
+- **bookings** - Pesanan tiket
+- **payments** - Data pembayaran
+- **schedule_requests** - Permintaan jadwal dari user
+- **gallery_items** - Foto galeri
+
+### Key Features
+- Foreign key constraints untuk integritas data
+- Indexes pada kolom yang sering dicari
+- DEFAULT values dan CHECK constraints
+- CASCADE delete untuk hubungan parent-child
+- Timestamps (created_at, updated_at, last_requested_at)
+
+## 📖 User Guide
+
+### Untuk Pengguna Biasa (User)
+1. Daftar akun melalui halaman Register
+2. Login dengan email dan password
+3. Cari jadwal kereta di halaman Schedules
+4. Pilih kereta dan isi data penumpang
+5. Lakukan pembayaran
+6. Terima konfirmasi booking
+
+### Untuk Administrator
+1. Login dengan akun admin
+2. Akses dashboard dari sidebar
+3. Kelola stasiun, kereta, jadwal
+4. Approve/reject booking dari user
+5. Kelola galeri foto
+6. Monitor request jadwal dan buat jadwal baru
+
+## 🐛 Troubleshooting
+
+### Database Connection Error
+- Pastikan PostgreSQL berjalan: `psql -U postgres`
+- Verifikasi `database_complete.sql` sudah diimport
+- Cek parameter koneksi di kode aplikasi
+
+### Tomcat Deploy Error
+- Bersihkan folder `work` di Tomcat
+- Hapus file `.war` lama di folder `webapps`
+- Rebuild project: `mvn clean package`
+
+### Page Not Found (404)
+- Verifikasi nama context: `/UAS_GrandStation`
+- Pastikan Tomcat telah me-reload aplikasi
+- Check Tomcat logs di `logs/catalina.out`
+
+## 📞 Support & Contact
+
+Untuk pertanyaan atau laporan bug:
+- Email: `admin@grandstation.com`
+- Hubungi melalui form "Hubungi Kami" di aplikasi
+
+## 📄 License
+
+Project ini adalah assignment akademik. Silakan gunakan untuk keperluan pembelajaran.
 
 1. **Clone Repository**
 ```bash

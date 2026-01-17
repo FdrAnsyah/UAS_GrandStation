@@ -75,22 +75,51 @@
 </div>
 
 <div>
-    <% if (schedules == null || schedules.isEmpty()) { %>
+    <% if (schedules == null || schedules.isEmpty()) {
+        Integer originIdAttr = (Integer) request.getAttribute("originId");
+        Integer destinationIdAttr = (Integer) request.getAttribute("destinationId");
+        Object travelDateAttr = request.getAttribute("travelDate");
+        String travelDateFormatted = travelDateAttr != null ? travelDateAttr.toString() : "-";
+
+        String originLabel = "-";
+        String destLabel = "-";
+        if (originIdAttr != null && destinationIdAttr != null) {
+            dao.StationDAO stDao = new dao.StationDAO();
+            model.Station o = stDao.getById(originIdAttr);
+            model.Station d = stDao.getById(destinationIdAttr);
+            if (o != null) originLabel = o.getCode() + " - " + o.getName();
+            if (d != null) destLabel = d.getCode() + " - " + d.getName();
+        }
+        int requestCount = 0;
+        if (originIdAttr != null && destinationIdAttr != null) {
+            requestCount = new dao.ScheduleRequestDAO().getRequestCountByRoute(originIdAttr, destinationIdAttr);
+        }
+    %>
         <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center">
-            <div class="max-w-md mx-auto">
-                <div class="text-2xl font-bold text-slate-900 mb-2">Jadwal Tidak Ditemukan</div>
-                <p class="text-slate-600 mb-6">
-                    Maaf, belum ada jadwal kereta untuk rute dan tanggal yang Anda pilih.
-                    <strong>Permintaan Anda telah dicatat</strong> dan admin akan segera membuat jadwal baru berdasarkan kebutuhan Anda.
-                </p>
-                <div class="p-4 rounded-xl bg-sky-50 border border-sky-200 text-sm text-sky-800 mb-6">
-                    <p class="font-semibold mb-1">Request Anda akan diproses!</p>
-                    <p>Tim kami akan segera menambahkan jadwal untuk rute ini. Coba cari lagi nanti atau pilih rute lain.</p>
+            <div class="max-w-xl mx-auto space-y-3">
+                <div class="text-2xl font-bold text-slate-900">Jadwal Tidak Ditemukan</div>
+                <p class="text-slate-600">Kami sudah merekam permintaan Anda dan akan mengajukannya ke admin.</p>
+
+                <div class="p-4 rounded-xl bg-sky-50 border border-sky-200 text-sm text-sky-800 text-left">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-semibold">Rute diminta</span>
+                        <span class="font-bold text-sky-700 text-sm"><%= originLabel %> - <%= destLabel %></span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="font-semibold">Tanggal</span>
+                        <span class="font-bold text-sky-700 text-sm"><%= travelDateFormatted %></span>
+                    </div>
+                    <div class="mt-3 text-xs text-slate-600">Total request rute ini: <span class="font-semibold text-sky-700"><%= requestCount %></span></div>
                 </div>
-                <div class="flex gap-3 justify-center">
+
+                <div class="flex gap-3 justify-center mt-4">
                     <a href="${pageContext.request.contextPath}/index.jsp?halaman=home"
                        class="px-6 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-blue-700 text-white font-bold hover:shadow-lg transition">
                         Coba Rute Lain
+                    </a>
+                    <a href="${pageContext.request.contextPath}/bookings"
+                       class="px-6 py-3 rounded-xl border-2 border-slate-200 text-slate-700 font-bold hover:bg-slate-50 transition">
+                        Lihat Pesanan Saya
                     </a>
                 </div>
             </div>

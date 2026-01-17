@@ -28,7 +28,7 @@
                 <div class="text-sm text-slate-500">Detail Jadwal</div>
                 <div class="mt-2 font-semibold"><%= schedule.getTrain() != null ? schedule.getTrain().getLabel() : "-" %></div>
                 <div class="mt-3 text-sm">
-                    <div class="flex justify-between gap-3"><span class="text-slate-500">Rute</span><span class="font-medium"><%= schedule.getOrigin().getCode() %> → <%= schedule.getDestination().getCode() %></span></div>
+                    <div class="flex justify-between gap-3"><span class="text-slate-500">Rute</span><span class="font-medium"><%= schedule.getOrigin().getCode() %> - <%= schedule.getDestination().getCode() %></span></div>
                     <div class="flex justify-between gap-3 mt-2"><span class="text-slate-500">Berangkat</span><span class="font-medium"><%= schedule.getDepartTime() != null ? schedule.getDepartTime().format(dt) : "-" %></span></div>
                     <div class="flex justify-between gap-3 mt-2"><span class="text-slate-500">Tiba</span><span class="font-medium"><%= schedule.getArriveTime() != null ? schedule.getArriveTime().format(dt) : "-" %></span></div>
                     <div class="flex justify-between gap-3 mt-2"><span class="text-slate-500">Harga / kursi</span><span class="font-medium">Rp <%= String.format("%,.0f", schedule.getPrice()) %></span></div>

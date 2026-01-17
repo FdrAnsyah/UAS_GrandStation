@@ -48,6 +48,13 @@ public class PaymentServlet extends HttpServlet {
                 return;
             }
 
+            // Check booking status - only approved bookings can proceed to payment
+            if (!"approved".equalsIgnoreCase(booking.getStatus())) {
+                request.setAttribute("error", "Booking belum disetujui oleh admin. Silakan tunggu persetujuan admin.");
+                request.getRequestDispatcher("/payment.jsp").forward(request, response);
+                return;
+            }
+
             request.setAttribute("booking", booking);
             request.getRequestDispatcher("/payment.jsp").forward(request, response);
         } catch (NumberFormatException e) {
@@ -88,6 +95,13 @@ public class PaymentServlet extends HttpServlet {
 
             if (booking == null) {
                 request.setAttribute("error", "Booking tidak ditemukan!");
+                request.getRequestDispatcher("/payment.jsp").forward(request, response);
+                return;
+            }
+
+            // Check booking status - only approved bookings can proceed to payment
+            if (!"approved".equalsIgnoreCase(booking.getStatus())) {
+                request.setAttribute("error", "Booking belum disetujui oleh admin. Silakan tunggu persetujuan admin.");
                 request.getRequestDispatcher("/payment.jsp").forward(request, response);
                 return;
             }

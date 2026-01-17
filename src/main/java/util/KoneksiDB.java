@@ -10,7 +10,7 @@ public class KoneksiDB {
             // DB_URL, DB_USER, DB_PASS
             // Contoh:
             // DB_URL=jdbc:postgresql://localhost:5432/dbkeretaku
-            String url = System.getenv().getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/dbkeretaku");
+            String url = System.getenv().getOrDefault("DB_URL", "jdbc:postgresql://localhost:5432/grandstation");
             String user = System.getenv().getOrDefault("DB_USER", "postgres");
             String pass = System.getenv().getOrDefault("DB_PASS", "Sayapunyapostgre");
             Class.forName("org.postgresql.Driver");
@@ -25,5 +25,5 @@ public class KoneksiDB {
         if (KoneksiDB.getConnection() != null) {
             System.out.println("Koneksi berhasil");
         }
-    } 
+    }
 }

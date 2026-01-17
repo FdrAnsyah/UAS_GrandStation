@@ -37,27 +37,6 @@
             </p>
         </div>
 
-        <div class="grid lg:grid-cols-3 gap-8 mb-12">
-            <!-- Contact Info Cards -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
-                <h3 class="text-lg font-bold text-slate-900 mb-3">Telepon</h3>
-                <p class="text-slate-600 text-sm mb-2">+62 xxx xxx xxxx</p>
-                <p class="text-xs text-slate-500">Tersedia 24 jam</p>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
-                <h3 class="text-lg font-bold text-slate-900 mb-3">Email</h3>
-                <p class="text-slate-600 text-sm mb-2">support@grandstation.com</p>
-                <p class="text-xs text-slate-500">Respon dalam 24 jam</p>
-            </div>
-
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
-                <h3 class="text-lg font-bold text-slate-900 mb-3">Lokasi</h3>
-                <p class="text-slate-600 text-sm mb-2">Jalan Kereta No. 123</p>
-                <p class="text-xs text-slate-500">Jakarta, Indonesia</p>
-            </div>
-        </div>
-
         <!-- Contact Form -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8 sm:p-12">
             <h2 class="text-2xl font-bold text-slate-900 mb-8">Formulir Kontak</h2>
