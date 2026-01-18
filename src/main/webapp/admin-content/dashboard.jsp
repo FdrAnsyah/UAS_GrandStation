@@ -1,11 +1,16 @@
 <%-- Dashboard Content --%>
 <%@ page import="java.util.*, model.*, dao.*" %>
 <%
+    // Get attributes from request with null-safe defaults
+    List<Booking> bookings = (List<Booking>) request.getAttribute("bookings");
+    List<Train> trains = (List<Train>) request.getAttribute("trains");
+    List<Station> stations = (List<Station>) request.getAttribute("stations");
+
     // Stats calculations
     int totalBookings = bookings != null ? bookings.size() : 0;
     int totalTrains = trains != null ? trains.size() : 0;
     int totalStations = stations != null ? stations.size() : 0;
-    
+
     // Calculate revenue
     double totalRevenue = 0;
     if (bookings != null) {
