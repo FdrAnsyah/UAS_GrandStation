@@ -41,8 +41,8 @@
 
                 <!-- Carousel Inner -->
                 <div class="carousel-inner">
-                    <% for (int i = 0; i < featured.size(); i++) {
-                        GalleryItem g = featured.get(i);
+                    <% for (int i = 0; i < featured.size(); i++) { 
+                        GalleryItem g = featured.get(i); 
                     %>
                         <div class="carousel-item <%= i==0?"active":"" %>">
                             <img src="<%= g.getImageUrl() %>" class="w-full h-auto object-cover" alt="<%= g.getTitle() %>" style="min-height: 300px; max-height: 500px;" loading="lazy">

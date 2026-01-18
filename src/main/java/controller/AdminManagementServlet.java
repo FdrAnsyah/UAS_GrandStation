@@ -113,6 +113,8 @@ public class AdminManagementServlet extends HttpServlet {
                     addScheduleFromRequest(request, response);
                     break;
                 case "dashboard":
+                    showDashboard(request, response);
+                    break;
                 default:
                     // Forward to unified admin dashboard
                     request.setAttribute("pageTitle", "Dashboard Admin");
@@ -662,5 +664,26 @@ public class AdminManagementServlet extends HttpServlet {
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/admin-manage?action=schedule_requests&error=exception");
         }
+    }
+
+    private void showDashboard(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        BookingDAO bookingDAO = new BookingDAO();
+        TrainDAO trainDAO = new TrainDAO();
+        StationDAO stationDAO = new StationDAO();
+
+        // Get all data needed for dashboard
+        List<Booking> bookings = bookingDAO.getAll();
+        List<Train> trains = trainDAO.getAll();
+        List<Station> stations = stationDAO.getAll();
+
+        // Set attributes for JSP
+        request.setAttribute("bookings", bookings);
+        request.setAttribute("trains", trains);
+        request.setAttribute("stations", stations);
+        request.setAttribute("pageTitle", "Dashboard Admin");
+        request.setAttribute("pageSubtitle", "Statistik dan ringkasan sistem");
+
+        // Forward to unified admin dashboard
+        request.getRequestDispatcher("/admin-dashboard-unified.jsp").forward(request, response);
     }
 }
