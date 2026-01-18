@@ -484,7 +484,7 @@ public class AdminManagementServlet extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         GalleryItem item = galleryDAO.getById(id);
         request.setAttribute("galleryItem", item);
-        request.getRequestDispatcher("/admin-gallery-form.jsp").forward(request, response);
+        request.getRequestDispatcher("/admin-content/gallery-form.jsp").forward(request, response);
     }
 
     private void addGallery(HttpServletRequest request, HttpServletResponse response) throws IOException {

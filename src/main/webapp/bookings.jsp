@@ -91,8 +91,12 @@
                         <td class="px-5 py-4">
                             <% if ("approved".equals(b.getStatus())) { %>
                                 <a href="${pageContext.request.contextPath}/payment?bookingId=<%= b.getId() %>" class="px-3 py-1 text-xs bg-gradient-to-r from-sky-500 to-sky-700 text-white rounded hover:shadow-md transition">
-                                    payment
+                                    Lanjutkan Pembayaran
                                 </a>
+                            <% } else if ("pending".equals(b.getStatus())) { %>
+                                <span class="text-xs text-slate-500 text-amber-600">Menunggu Persetujuan</span>
+                            <% } else if ("rejected".equals(b.getStatus())) { %>
+                                <span class="text-xs text-slate-500 text-red-600">Ditolak</span>
                             <% } else { %>
                                 <span class="text-xs text-slate-500">-</span>
                             <% } %>
